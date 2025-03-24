@@ -27,6 +27,7 @@ dependencies {
     // wldt dependencies
     implementation group: 'io.github.wldt', name: 'wldt-core', version: '0.4.0'
     implementation 'io.github.wldt:mqtt-physical-adapter:0.1.2'
+    implementation 'io.github.wldt:http-digital-adapter:0.2'
 
 }
 
