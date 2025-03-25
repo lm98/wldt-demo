@@ -50,7 +50,7 @@ public class App {
             var httpDigitalAdapter = new HttpDigitalAdapter(digitalConfig, dt);
 
             // Create an instance of MqttPhysical Adapter Configuration
-            var physicalConfig = MqttPhysicalAdapterConfiguration.builder("test.mosquitto.org", 1883)
+            var physicalConfig = MqttPhysicalAdapterConfiguration.builder("127.0.0.1", 1883)
                     .addPhysicalAssetPropertyAndTopic("intensity", 0, "sensor/intensity", Integer::parseInt)
                     .addIncomingTopic(new DigitalTwinIncomingTopic("sensor/state", getSensorStateFunction()),
                             createIncomingTopicRelatedPropertyList(), new ArrayList<>())
