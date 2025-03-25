@@ -152,7 +152,6 @@ public class DefaultShadowingFunction extends ShadowingFunction {
     protected void onPhysicalAssetEventNotification(PhysicalAssetEventWldtEvent<?> physicalAssetEventWldtEvent) {
         logger.info("Shadowing - onPhysicalAssetEventNotification - received Event:{}", physicalAssetEventWldtEvent);
         try {
-            logger.info("Hey!!");
             this.digitalTwinStateManager.notifyDigitalTwinStateEvent(new DigitalTwinStateEventNotification<>(
                     physicalAssetEventWldtEvent.getPhysicalEventKey(),
                     (String) physicalAssetEventWldtEvent.getBody(),
