@@ -12,10 +12,6 @@ import it.wldt.core.engine.DigitalTwin;
 import it.wldt.core.engine.DigitalTwinEngine;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) {
         try {
             var dt = new DigitalTwin("my-twin", new DefaultShadowingFunction());
