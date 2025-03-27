@@ -56,7 +56,11 @@ tasks.register('runDT', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-tasks.register('runThermometer', JavaExec) {
-    mainClass = 'org.example.Thermometer'
+tasks.register('runProducer', JavaExec) {
+    mainClass = 'org.example.MqttNumberProducer'
     classpath = sourceSets.main.runtimeClasspath
+
+    if (project.hasProperty('args')) {
+        args = project.args.split(' ')
+    }
 }

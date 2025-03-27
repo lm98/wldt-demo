@@ -8,20 +8,20 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
- * This class emulates a physical device generating temperature measurements
- * periodically.
+ * This class emulates a physical device generating measurements periodically.
  * This emulated device will communicate via MQTT with the WLDT's
  * PhysicalAdapter.
  */
-public class Thermometer {
+public class MqttNumberProducer {
     private static final String BROKER = "127.0.0.1";
     private static final String PORT = "1883";
     private static final String BROKER_URL = "tcp://" + BROKER + ":" + PORT;
-    private static final String ID = "my-thermometer";
     private MqttClient mqttClient;
+    private String sendTopic;
 
-    public Thermometer() throws MqttException {
-        this.mqttClient = new MqttClient(BROKER_URL, ID);
+    public MqttNumberProducer(String id, String topic) throws MqttException {
+        this.mqttClient = new MqttClient(BROKER_URL, id);
+        this.sendTopic = topic;
         var options = new MqttConnectOptions();
         this.mqttClient.connect(options);
     }
@@ -32,10 +32,10 @@ public class Thermometer {
                 try {
                     Thread.sleep(5000);
                     var rng = new Random();
-                    Double temperature = rng.nextDouble();
-                    var message = new MqttMessage(temperature.toString().getBytes());
-                    System.out.println("sending: " + message.toString());
-                    mqttClient.publish("sensor/temperature", message);
+                    Double value = rng.nextDouble();
+                    var message = new MqttMessage(value.toString().getBytes());
+                    System.out.println("sending: " + message.toString() + " on topic " + sendTopic);
+                    mqttClient.publish(sendTopic, message);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -45,7 +45,9 @@ public class Thermometer {
 
     public static void main(String[] args) {
         try {
-            new Thread(new Thermometer().emulate()).start();
+            var id = args[0];
+            var topic = args[1];
+            new Thread(new MqttNumberProducer(id, topic).emulate()).start();
         } catch (MqttException e) {
             e.printStackTrace();
         }
