@@ -28,6 +28,9 @@ dependencies {
     implementation group: 'io.github.wldt', name: 'wldt-core', version: '0.4.0'
     implementation 'io.github.wldt:mqtt-physical-adapter:0.1.2'
     implementation 'io.github.wldt:http-digital-adapter:0.2'
+    
+    // Mqtt
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
 
 }
 
@@ -46,4 +49,14 @@ application {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+tasks.register('runDT', JavaExec) {
+    mainClass = 'org.example.App'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+tasks.register('runThermometer', JavaExec) {
+    mainClass = 'org.example.Thermometer'
+    classpath = sourceSets.main.runtimeClasspath
 }
