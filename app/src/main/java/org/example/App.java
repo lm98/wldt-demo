@@ -3,29 +3,13 @@
  */
 package org.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Function;
-
 import org.example.shadowing.DefaultShadowingFunction;
-import org.example.utils.MessageDescriptor;
-
-import com.google.gson.Gson;
-
 import it.wldt.adapter.http.digital.adapter.HttpDigitalAdapter;
 import it.wldt.adapter.http.digital.adapter.HttpDigitalAdapterConfiguration;
 import it.wldt.adapter.mqtt.physical.MqttPhysicalAdapter;
 import it.wldt.adapter.mqtt.physical.MqttPhysicalAdapterConfiguration;
-import it.wldt.adapter.mqtt.physical.topic.incoming.DigitalTwinIncomingTopic;
-import it.wldt.adapter.mqtt.physical.topic.incoming.MqttSubscribeFunction;
-import it.wldt.adapter.physical.PhysicalAssetProperty;
-import it.wldt.adapter.physical.event.PhysicalAssetPropertyWldtEvent;
 import it.wldt.core.engine.DigitalTwin;
 import it.wldt.core.engine.DigitalTwinEngine;
-import it.wldt.core.event.WldtEvent;
-import it.wldt.exception.EventBusException;
 
 public class App {
     public String getGreeting() {
@@ -39,26 +23,14 @@ public class App {
             var digitalConfig = new HttpDigitalAdapterConfiguration("my-http-adapter", "localhost", 8080);
             // Add property filter
             digitalConfig.addPropertyFilter("temperature");
-            digitalConfig.addPropertiesFilter(Arrays.asList("humidity", "pressure"));
-            // Add action filter
-            digitalConfig.addActionFilter("start");
-            digitalConfig.addActionsFilter(Arrays.asList("stop", "reset"));
-            // Add event filter
-            digitalConfig.addEventFilter("temperatureChange");
-            digitalConfig.addEventsFilter(Collections.singletonList("pressureChange"));
+            digitalConfig.addPropertyFilter("humidity");
 
             var httpDigitalAdapter = new HttpDigitalAdapter(digitalConfig, dt);
 
             // Create an instance of MqttPhysical Adapter Configuration
             var physicalConfig = MqttPhysicalAdapterConfiguration.builder("127.0.0.1", 1883)
                     .addPhysicalAssetPropertyAndTopic("temperature", 0.0, "sensor/temperature", Double::parseDouble)
-                    .addPhysicalAssetPropertyAndTopic("intensity", 0, "sensor/intensity", Integer::parseInt)
-                    .addIncomingTopic(new DigitalTwinIncomingTopic("sensor/state", getSensorStateFunction()),
-                            createIncomingTopicRelatedPropertyList(), new ArrayList<>())
-                    .addPhysicalAssetEventAndTopic("overheating", "text/plain", "sensor/overheating",
-                            Function.identity())
-                    .addPhysicalAssetActionAndTopic("switch-off", "sensor.actuation", "text/plain",
-                            "sensor/actions/switch", actionBody -> "switch" + actionBody)
+                    .addPhysicalAssetPropertyAndTopic("humidity", 0.0, "sensor/humidity", Double::parseDouble)
                     .build();
 
             var mqttPhysicalAdapter = new MqttPhysicalAdapter("test-mqtt-pa", physicalConfig);
@@ -73,26 +45,5 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static MqttSubscribeFunction getSensorStateFunction() {
-        return msgPayload -> {
-            var md = new Gson().fromJson(msgPayload, MessageDescriptor.class);
-            var events = new ArrayList<WldtEvent<?>>();
-            try {
-                events.add(new PhysicalAssetPropertyWldtEvent<>("temperature", md.getTemperatureValue()));
-                events.add(new PhysicalAssetPropertyWldtEvent<>("humidity", md.getHumidityValue()));
-            } catch (EventBusException e) {
-                e.printStackTrace();
-            }
-            return events;
-        };
-    }
-
-    private static List<PhysicalAssetProperty<?>> createIncomingTopicRelatedPropertyList() {
-        var properties = new ArrayList<PhysicalAssetProperty<?>>();
-        properties.add(new PhysicalAssetProperty<>("temperature", 0));
-        properties.add(new PhysicalAssetProperty<>("humidity", 0));
-        return properties;
     }
 }
