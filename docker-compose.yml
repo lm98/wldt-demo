@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  producer:
+    build:
+      context: .
+    command: ["./gradlew", "runProducer", "--args=thermometer sensor/temperature"]
+    depends_on:
+      - broker
+    environment:
+      - MQTT_BROKER=broker
+      - MQTT_PORT=1883
+
+  digital_twin:
+    build:
+      context: .
+    command: ["./gradlew", "runDT"]
+    depends_on:
+      - broker
+    environment:
+      - MQTT_BROKER=broker
+      - MQTT_PORT=1883
+
+  broker:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config

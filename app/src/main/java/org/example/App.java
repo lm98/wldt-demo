@@ -12,6 +12,9 @@ import it.wldt.core.engine.DigitalTwin;
 import it.wldt.core.engine.DigitalTwinEngine;
 
 public class App {
+    private static final String MQTT_BROKER = System.getenv().getOrDefault("MQTT_BROKER", "127.0.0.1");
+    private static final String MQTT_PORT = System.getenv().getOrDefault("MQTT_PORT", "1883");
+
     public static void main(String[] args) {
         try {
             var dt = new DigitalTwin("my-twin", new DefaultShadowingFunction());
@@ -24,7 +27,7 @@ public class App {
             var httpDigitalAdapter = new HttpDigitalAdapter(digitalConfig, dt);
 
             // Create an instance of MqttPhysical Adapter Configuration
-            var physicalConfig = MqttPhysicalAdapterConfiguration.builder("127.0.0.1", 1883)
+            var physicalConfig = MqttPhysicalAdapterConfiguration.builder(MQTT_BROKER, Integer.parseInt(MQTT_PORT))
                     .addPhysicalAssetPropertyAndTopic("temperature", 0.0, "sensor/temperature", Double::parseDouble)
                     .addPhysicalAssetPropertyAndTopic("humidity", 0.0, "sensor/humidity", Double::parseDouble)
                     .build();

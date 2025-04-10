@@ -13,8 +13,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * PhysicalAdapter.
  */
 public class MqttNumberProducer {
-    private static final String BROKER = "127.0.0.1";
-    private static final String PORT = "1883";
+    private static final String BROKER = System.getenv().getOrDefault("MQTT_BROKER", "127.0.0.1");
+    private static final String PORT = System.getenv().getOrDefault("MQTT_PORT", "1883");
     private static final String BROKER_URL = "tcp://" + BROKER + ":" + PORT;
     private MqttClient mqttClient;
     private String sendTopic;
